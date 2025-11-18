@@ -1,0 +1,32 @@
+# 升级规则示例配置
+# 对应不同等级的升级条件
+
+rules:
+  - id: 1
+    source_level_id: 1
+    target_level_id: 2
+    upgrade_expression: "withdrawnAmount >= 5000"
+    is_enabled: true
+    description: "普通会员 → 银牌会员：已提现金额达到 5000 元"
+
+  - id: 2
+    source_level_id: 2
+    target_level_id: 3
+    upgrade_expression: "withdrawnAmount >= 10000 and inviteeCount >= 10"
+    is_enabled: true
+    description: "银牌会员 → 金牌会员：已提现金额 >= 10000 且邀请人数 >= 10"
+
+  - id: 3
+    source_level_id: 3
+    target_level_id: 4
+    upgrade_expression: "withdrawnAmount >= 50000 or inviteeCount >= 50"
+    is_enabled: true
+    description: "金牌会员 → 钻石会员：已提现金额 >= 50000 或邀请人数 >= 50"
+
+  # 禁用的规则示例
+  - id: 4
+    source_level_id: 1
+    target_level_id: 4
+    upgrade_expression: "withdrawnAmount >= 100000"
+    is_enabled: false
+    description: "跳级升级规则（已禁用）"

@@ -1,0 +1,51 @@
+# 测试用分销员数据
+# 包含不同状态的分销员，用于测试升级场景
+
+distributors:
+  # 接近升级阈值的分销员（已提现 4500，差 500 即可升级）
+  - id: 1001
+    username: "test_distributor_near_upgrade"
+    level_id: 1
+    withdrawn_amount: 4500
+    invitee_count: 5
+    status: "Approved"
+
+  # 已达升级条件的分销员（已提现 6000）
+  - id: 1002
+    username: "test_distributor_ready_upgrade"
+    level_id: 1
+    withdrawn_amount: 6000
+    invitee_count: 8
+    status: "Approved"
+
+  # 银牌会员，接近金牌升级条件
+  - id: 1003
+    username: "test_silver_member"
+    level_id: 2
+    withdrawn_amount: 12000
+    invitee_count: 9
+    status: "Approved"
+
+  # 金牌会员，已达最高等级前一级
+  - id: 1004
+    username: "test_gold_member"
+    level_id: 3
+    withdrawn_amount: 45000
+    invitee_count: 48
+    status: "Approved"
+
+  # 钻石会员（最高等级）
+  - id: 1005
+    username: "test_diamond_member"
+    level_id: 4
+    withdrawn_amount: 100000
+    invitee_count: 100
+    status: "Approved"
+
+  # 待审核分销员（不应参与升级）
+  - id: 1006
+    username: "test_pending_distributor"
+    level_id: 1
+    withdrawn_amount: 10000
+    invitee_count: 20
+    status: "Pending"
