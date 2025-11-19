@@ -12,6 +12,7 @@ use Tourze\CommissionUpgradeBundle\Service\UpgradeExpressionEvaluator;
  * T018: UpgradeExpressionEvaluator 单元测试
  *
  * 测试表达式验证与评估功能
+ * @internal
  */
 #[CoversClass(UpgradeExpressionEvaluator::class)]
 final class UpgradeExpressionEvaluatorTest extends TestCase
@@ -27,7 +28,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试简单条件验证：withdrawnAmount >= 5000
      */
-    public function it_validates_simple_condition(): void
+    public function testValidate(): void
     {
         $expression = 'withdrawnAmount >= 5000';
 
@@ -40,7 +41,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试复杂条件验证：withdrawnAmount >= 10000 and inviteeCount >= 10
      */
-    public function it_validates_complex_and_condition(): void
+    public function itValidatesComplexAndCondition(): void
     {
         $expression = 'withdrawnAmount >= 10000 and inviteeCount >= 10';
 
@@ -53,7 +54,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试 OR 条件验证：withdrawnAmount >= 50000 or inviteeCount >= 50
      */
-    public function it_validates_complex_or_condition(): void
+    public function itValidatesComplexOrCondition(): void
     {
         $expression = 'withdrawnAmount >= 50000 or inviteeCount >= 50';
 
@@ -66,7 +67,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试所有可用变量
      */
-    public function it_validates_all_allowed_variables(): void
+    public function itValidatesAllAllowedVariables(): void
     {
         $expression = 'withdrawnAmount >= 1000 and inviteeCount >= 5 and orderCount >= 10 and activeInviteeCount >= 3';
 
@@ -79,7 +80,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试验证失败：语法错误
      */
-    public function it_throws_exception_for_syntax_error(): void
+    public function itThrowsExceptionForSyntaxError(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('/语法错误|Syntax error/i');
@@ -93,7 +94,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试验证失败：非法变量
      */
-    public function it_throws_exception_for_illegal_variable(): void
+    public function itThrowsExceptionForIllegalVariable(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         // Symfony ExpressionLanguage 在 parse 阶段就会检查变量是否在允许列表中
@@ -109,7 +110,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试执行评估：条件满足
      */
-    public function it_evaluates_expression_when_condition_met(): void
+    public function testEvaluate(): void
     {
         $expression = 'withdrawnAmount >= 5000';
         $context = ['withdrawnAmount' => 6000];
@@ -123,7 +124,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试执行评估：条件不满足
      */
-    public function it_evaluates_expression_when_condition_not_met(): void
+    public function itEvaluatesExpressionWhenConditionNotMet(): void
     {
         $expression = 'withdrawnAmount >= 5000';
         $context = ['withdrawnAmount' => 4500];
@@ -137,7 +138,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试执行评估：边界值（正好等于）
      */
-    public function it_evaluates_expression_at_boundary_value(): void
+    public function itEvaluatesExpressionAtBoundaryValue(): void
     {
         $expression = 'withdrawnAmount >= 5000';
         $context = ['withdrawnAmount' => 5000];
@@ -151,7 +152,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试执行评估：复杂 AND 条件满足
      */
-    public function it_evaluates_complex_and_condition_when_met(): void
+    public function itEvaluatesComplexAndConditionWhenMet(): void
     {
         $expression = 'withdrawnAmount >= 10000 and inviteeCount >= 10';
         $context = [
@@ -168,7 +169,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试执行评估：复杂 AND 条件部分满足
      */
-    public function it_evaluates_complex_and_condition_when_partially_met(): void
+    public function itEvaluatesComplexAndConditionWhenPartiallyMet(): void
     {
         $expression = 'withdrawnAmount >= 10000 and inviteeCount >= 10';
         $context = [
@@ -185,7 +186,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试执行评估：复杂 OR 条件之一满足
      */
-    public function it_evaluates_complex_or_condition_when_one_met(): void
+    public function itEvaluatesComplexOrConditionWhenOneMet(): void
     {
         $expression = 'withdrawnAmount >= 50000 or inviteeCount >= 50';
         $context = [
@@ -202,7 +203,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试执行失败：除零错误
      */
-    public function it_handles_division_by_zero_error(): void
+    public function itHandlesDivisionByZeroError(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessageMatches('/除零|Division by zero/i');
@@ -217,7 +218,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试执行失败：类型不匹配
      */
-    public function it_handles_type_mismatch_error(): void
+    public function itHandlesTypeMismatchError(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -232,7 +233,7 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      * @test
      * 测试获取可用变量清单
      */
-    public function it_returns_allowed_variables(): void
+    public function itReturnsAllowedVariables(): void
     {
         $variables = $this->evaluator->getAllowedVariables();
 

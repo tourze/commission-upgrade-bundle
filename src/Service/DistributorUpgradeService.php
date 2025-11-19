@@ -20,7 +20,7 @@ use Tourze\OrderCommissionBundle\Entity\WithdrawLedger;
  *
  * 负责升级检查、升级执行、等级查询和幂等性保障
  */
-final class DistributorUpgradeService
+class DistributorUpgradeService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -56,7 +56,6 @@ final class DistributorUpgradeService
             $this->logger->debug('未找到升级规则,可能已达最高等级', [
                 'distributor_id' => $distributor->getId(),
                 'current_level' => $currentLevel->getName(),
-                'current_level_sort' => $currentLevel->getSort(),
             ]);
 
             return null; // 已达最高等级或未配置升级规则

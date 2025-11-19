@@ -5,6 +5,7 @@ namespace Tourze\CommissionUpgradeBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tourze\BundleDependency\BundleDependencyInterface;
+use Tourze\EcolBundle\EcolBundle;
 use Tourze\OrderCommissionBundle\OrderCommissionBundle;
 
 class CommissionUpgradeBundle extends Bundle implements BundleDependencyInterface
@@ -14,6 +15,7 @@ class CommissionUpgradeBundle extends Bundle implements BundleDependencyInterfac
         return [
             DoctrineBundle::class => ['all' => true],
             OrderCommissionBundle::class => ['all' => true],
+            EcolBundle::class => ['all' => true],
         ];
     }
 }

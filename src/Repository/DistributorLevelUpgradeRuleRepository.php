@@ -16,7 +16,7 @@ use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
  * @extends ServiceEntityRepository<DistributorLevelUpgradeRule>
  */
 #[Autoconfigure(public: true)]
-final class DistributorLevelUpgradeRuleRepository extends ServiceEntityRepository
+class DistributorLevelUpgradeRuleRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

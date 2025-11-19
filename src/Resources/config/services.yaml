@@ -4,5 +4,36 @@ services:
     autowire: true      # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-#  Tourze\CommissionUpgradeBundle\EventSubscriber\:
-#    resource: '../../EventSubscriber/'
+  Tourze\CommissionUpgradeBundle\Command\:
+    resource: '../../Command/'
+  Tourze\CommissionUpgradeBundle\Controller\:
+    resource: '../../Controller/'
+  Tourze\CommissionUpgradeBundle\EventListener\:
+    resource: '../../EventListener/'
+  Tourze\CommissionUpgradeBundle\MessageHandler\:
+    resource: '../../MessageHandler/'
+  Tourze\CommissionUpgradeBundle\Repository\:
+    resource: '../../Repository/'
+  Tourze\CommissionUpgradeBundle\Service\:
+    resource: '../../Service/'
+  Tourze\CommissionUpgradeBundle\Validator\:
+    resource: '../../Validator/'
+
+when@not_test:
+  framework:
+    messenger:
+      # 路由配置：将 DistributorUpgradeCheckMessage 路由到异步传输层
+      routing:
+        'Tourze\CommissionUpgradeBundle\Message\DistributorUpgradeCheckMessage': async
+
+      # 重试策略配置（T021）
+      transports:
+        async:
+          retry_strategy:
+            max_retries: 3                # 最多重试 3 次
+            delay: 1000                   # 首次重试延迟 1 秒
+            multiplier: 5                 # 指数退避倍数（1s → 5s → 25s）
+            max_delay: 30000              # 最大延迟 30 秒
+
+      # 死信队列配置（T022）
+      failure_transport: failed

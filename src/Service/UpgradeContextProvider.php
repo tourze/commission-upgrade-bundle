@@ -16,7 +16,7 @@ use Tourze\OrderCommissionBundle\Repository\WithdrawLedgerRepository;
  *
  * 负责构建升级判断所需的上下文变量,从多个数据源聚合统计指标
  */
-final class UpgradeContextProvider
+class UpgradeContextProvider
 {
     public function __construct(
         private WithdrawLedgerRepository $withdrawLedgerRepository,

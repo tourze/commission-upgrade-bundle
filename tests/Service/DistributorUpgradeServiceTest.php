@@ -39,10 +39,10 @@ final class DistributorUpgradeServiceTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
         $this->service = new DistributorUpgradeService(
-            $this->ruleRepository,
-            $this->expressionEvaluator,
+            $this->entityManager,
             $this->contextProvider,
-            $this->entityManager
+            $this->expressionEvaluator,
+            $this->ruleRepository
         );
     }
 
@@ -50,7 +50,7 @@ final class DistributorUpgradeServiceTest extends TestCase
      * @test
      * 测试满足条件时执行升级
      */
-    public function it_performs_upgrade_when_condition_met(): void
+    public function testCheckAndUpgrade(): void
     {
         $sourceLevel = $this->createMockLevel(1, '普通会员');
         $targetLevel = $this->createMockLevel(2, '银牌会员');
@@ -62,7 +62,7 @@ final class DistributorUpgradeServiceTest extends TestCase
         // Mock findNextLevelRule 返回规则
         $this->ruleRepository
             ->expects($this->once())
-            ->method('findEnabledBySourceLevel')
+            ->method('findBySourceLevel')
             ->with($sourceLevel)
             ->willReturn($rule);
 
@@ -87,9 +87,17 @@ final class DistributorUpgradeServiceTest extends TestCase
             ->method('beginTransaction');
 
         $this->entityManager
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('persist')
-            ->with($this->isInstanceOf(DistributorLevelUpgradeHistory::class));
+            ->willReturnCallback(function ($entity) {
+                static $callCount = 0;
+                ++$callCount;
+                if (1 === $callCount) {
+                    $this->assertInstanceOf(Distributor::class, $entity, 'First persist should be Distributor');
+                } elseif (2 === $callCount) {
+                    $this->assertInstanceOf(DistributorLevelUpgradeHistory::class, $entity, 'Second persist should be DistributorLevelUpgradeHistory');
+                }
+            });
 
         $this->entityManager
             ->expects($this->once())
@@ -117,7 +125,7 @@ final class DistributorUpgradeServiceTest extends TestCase
         $rule = $this->createMockRule($sourceLevel, $targetLevel, 'withdrawnAmount >= 5000');
 
         $this->ruleRepository
-            ->method('findEnabledBySourceLevel')
+            ->method('findBySourceLevel')
             ->willReturn($rule);
 
         // Mock buildContext 返回上下文
@@ -153,7 +161,7 @@ final class DistributorUpgradeServiceTest extends TestCase
         // Mock findNextLevelRule 返回 null（无下一级别规则）
         $this->ruleRepository
             ->expects($this->once())
-            ->method('findEnabledBySourceLevel')
+            ->method('findBySourceLevel')
             ->with($maxLevel)
             ->willReturn(null);
 
@@ -171,14 +179,14 @@ final class DistributorUpgradeServiceTest extends TestCase
      * @test
      * 测试查找下一级别规则
      */
-    public function it_finds_next_level_rule(): void
+    public function testFindNextLevelRule(): void
     {
         $sourceLevel = $this->createMockLevel(1, '普通会员');
         $targetLevel = $this->createMockLevel(2, '银牌会员');
         $rule = $this->createMockRule($sourceLevel, $targetLevel, 'withdrawnAmount >= 5000');
 
         $this->ruleRepository
-            ->method('findEnabledBySourceLevel')
+            ->method('findBySourceLevel')
             ->with($sourceLevel)
             ->willReturn($rule);
 
@@ -200,7 +208,7 @@ final class DistributorUpgradeServiceTest extends TestCase
         $rule = $this->createMockRule($sourceLevel, $targetLevel, 'withdrawnAmount >= 5000');
 
         $this->ruleRepository
-            ->method('findEnabledBySourceLevel')
+            ->method('findBySourceLevel')
             ->willReturn($rule);
 
         $this->contextProvider
@@ -241,7 +249,6 @@ final class DistributorUpgradeServiceTest extends TestCase
     private function createMockLevel(int $level, string $name): DistributorLevel
     {
         $mock = $this->createMock(DistributorLevel::class);
-        $mock->method('getLevel')->willReturn($level);
         $mock->method('getName')->willReturn($name);
 
         return $mock;

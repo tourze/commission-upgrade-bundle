@@ -8,6 +8,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\Node\NameNode;
+use Symfony\Component\ExpressionLanguage\Node\Node;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 /**
@@ -15,7 +16,7 @@ use Symfony\Component\ExpressionLanguage\SyntaxError;
  *
  * 负责验证表达式语法和变量合法性,并基于上下文执行表达式评估
  */
-final class UpgradeExpressionEvaluator
+class UpgradeExpressionEvaluator
 {
     /**
      * 允许在升级表达式中使用的变量白名单.
@@ -100,7 +101,7 @@ final class UpgradeExpressionEvaluator
      *
      * @param array<string> $invalidVariables 收集的无效变量（引用传递）
      */
-    private function validateNodeVariables(\Symfony\Component\ExpressionLanguage\Node\Node $node, array &$invalidVariables): void
+    private function validateNodeVariables(Node $node, array &$invalidVariables): void
     {
         $this->checkAndCollectInvalidVariable($node, $invalidVariables);
         $this->validateChildNodes($node, $invalidVariables);
@@ -111,7 +112,7 @@ final class UpgradeExpressionEvaluator
      *
      * @param array<string> $invalidVariables 收集的无效变量（引用传递）
      */
-    private function checkAndCollectInvalidVariable(\Symfony\Component\ExpressionLanguage\Node\Node $node, array &$invalidVariables): void
+    private function checkAndCollectInvalidVariable(Node $node, array &$invalidVariables): void
     {
         if ($node instanceof NameNode) {
             $varName = $node->attributes['name'];
@@ -126,7 +127,7 @@ final class UpgradeExpressionEvaluator
      *
      * @param array<string> $invalidVariables 收集的无效变量（引用传递）
      */
-    private function validateChildNodes(\Symfony\Component\ExpressionLanguage\Node\Node $node, array &$invalidVariables): void
+    private function validateChildNodes(Node $node, array &$invalidVariables): void
     {
         $reflection = new \ReflectionClass($node);
         foreach ($reflection->getProperties() as $property) {
@@ -144,7 +145,7 @@ final class UpgradeExpressionEvaluator
      */
     private function validatePropertyValue(mixed $value, array &$invalidVariables): void
     {
-        if ($value instanceof \Symfony\Component\ExpressionLanguage\Node\Node) {
+        if ($value instanceof Node) {
             $this->validateNodeVariables($value, $invalidVariables);
 
             return;
@@ -164,7 +165,7 @@ final class UpgradeExpressionEvaluator
     private function validateArrayItems(array $items, array &$invalidVariables): void
     {
         foreach ($items as $item) {
-            if ($item instanceof \Symfony\Component\ExpressionLanguage\Node\Node) {
+            if ($item instanceof Node) {
                 $this->validateNodeVariables($item, $invalidVariables);
             }
         }

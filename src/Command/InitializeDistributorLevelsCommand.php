@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Tourze\CommissionUpgradeBundle\Service\DistributorUpgradeService;
+use Tourze\OrderCommissionBundle\Entity\Distributor;
 use Tourze\OrderCommissionBundle\Repository\DistributorRepository;
 
 /**
@@ -27,9 +28,9 @@ use Tourze\OrderCommissionBundle\Repository\DistributorRepository;
 final class InitializeDistributorLevelsCommand extends Command
 {
     public function __construct(
-        private DistributorRepository $distributorRepository,
-        private DistributorUpgradeService $upgradeService,
-        private EntityManagerInterface $entityManager,
+        private readonly DistributorRepository $distributorRepository,
+        private readonly DistributorUpgradeService $upgradeService,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }
@@ -103,7 +104,7 @@ final class InitializeDistributorLevelsCommand extends Command
     /**
      * 批量处理所有分销员.
      *
-     * @param array<\Tourze\OrderCommissionBundle\Entity\Distributor> $distributors
+     * @param array<Distributor> $distributors
      *
      * @return array{int, int} [升级数量, 错误数量]
      */
@@ -135,7 +136,7 @@ final class InitializeDistributorLevelsCommand extends Command
      *
      * @return array{upgraded: bool, error: bool}
      */
-    private function processDistributor(\Tourze\OrderCommissionBundle\Entity\Distributor $distributor, SymfonyStyle $io): array
+    private function processDistributor(Distributor $distributor, SymfonyStyle $io): array
     {
         try {
             $history = $this->upgradeService->checkAndUpgrade($distributor);
@@ -151,7 +152,7 @@ final class InitializeDistributorLevelsCommand extends Command
     /**
      * 处理升级错误.
      */
-    private function handleUpgradeError(\Tourze\OrderCommissionBundle\Entity\Distributor $distributor, \Throwable $e, SymfonyStyle $io): void
+    private function handleUpgradeError(Distributor $distributor, \Throwable $e, SymfonyStyle $io): void
     {
         if ($io->isVerbose()) {
             $io->error(sprintf(
