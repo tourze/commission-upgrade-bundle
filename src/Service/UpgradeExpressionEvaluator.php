@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\CommissionUpgradeBundle\Service;
 
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -16,6 +17,7 @@ use Symfony\Component\ExpressionLanguage\SyntaxError;
  *
  * 负责验证表达式语法和变量合法性,并基于上下文执行表达式评估
  */
+#[WithMonologChannel(channel: 'commission_upgrade')]
 class UpgradeExpressionEvaluator
 {
     /**
@@ -26,6 +28,7 @@ class UpgradeExpressionEvaluator
         'inviteeCount',       // 邀请人数
         'orderCount',         // 订单数
         'activeInviteeCount', // 活跃邀请人数(30天内有订单)
+        'settledCommissionAmount', // 已结算总佣金
     ];
 
     private ExpressionLanguage $expressionLanguage;

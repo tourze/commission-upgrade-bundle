@@ -4,21 +4,26 @@ declare(strict_types=1);
 
 namespace Tourze\CommissionUpgradeBundle\Tests\MessageHandler;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\CommissionUpgradeBundle\MessageHandler\DistributorUpgradeCheckHandler;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractMessageHandlerTestCase;
 
 /**
- * 单元测试：验证 DistributorUpgradeCheckHandler 处理逻辑
+ * 集成测试：验证 DistributorUpgradeCheckHandler 处理逻辑
  *
  * 对应任务：T011 [P] [US1]
  * 测试目标：验证 Handler 的消息处理逻辑、错误处理、日志记录
- *
- * 注意：由于 DistributorUpgradeService 是 final 类且依赖复杂，
- * 本测试专注于验证 Handler 的结构和契约正确性。
- * 详细的业务逻辑和错误场景测试将在 AsyncUpgradeFlowTest 中进行端到端验证。
  */
-final class DistributorUpgradeCheckHandlerTest extends TestCase
+#[CoversClass(DistributorUpgradeCheckHandler::class)]
+#[RunTestsInSeparateProcesses]
+final class DistributorUpgradeCheckHandlerTest extends AbstractMessageHandlerTestCase
 {
+    protected function onSetUp(): void
+    {
+        // 无需自定义初始化
+    }
+
     /**
      * 测试场景：Handler 具有 AsMessageHandler 属性（自动注册为消费者）
      */
@@ -105,5 +110,31 @@ final class DistributorUpgradeCheckHandlerTest extends TestCase
                 "{$paramName} 参数的类型应该是 {$expectedType}"
             );
         }
+    }
+
+    /**
+     * 测试场景：Handler 具有 WithMonologChannel 属性
+     */
+    public function testHandlerHasWithMonologChannelAttribute(): void
+    {
+        // Arrange
+        $reflection = new \ReflectionClass(DistributorUpgradeCheckHandler::class);
+
+        // Act
+        $attributes = $reflection->getAttributes(\Monolog\Attribute\WithMonologChannel::class);
+
+        // Assert
+        $this->assertCount(
+            1,
+            $attributes,
+            'Handler 必须有 #[WithMonologChannel] 属性'
+        );
+
+        $attribute = $attributes[0]->newInstance();
+        $this->assertSame(
+            'commission_upgrade',
+            $attribute->channel,
+            'Handler 的日志频道应该是 commission_upgrade'
+        );
     }
 }

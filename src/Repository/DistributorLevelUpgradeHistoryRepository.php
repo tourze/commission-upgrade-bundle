@@ -7,8 +7,9 @@ namespace Tourze\CommissionUpgradeBundle\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Tourze\CommissionDistributorBundle\Entity\Distributor;
 use Tourze\CommissionUpgradeBundle\Entity\DistributorLevelUpgradeHistory;
-use Tourze\OrderCommissionBundle\Entity\Distributor;
+use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
 
 /**
  * 分销员等级升级历史仓储.
@@ -16,6 +17,7 @@ use Tourze\OrderCommissionBundle\Entity\Distributor;
  * @extends ServiceEntityRepository<DistributorLevelUpgradeHistory>
  */
 #[Autoconfigure(public: true)]
+#[AsRepository(entityClass: DistributorLevelUpgradeHistory::class)]
 final class DistributorLevelUpgradeHistoryRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

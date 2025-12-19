@@ -135,9 +135,7 @@ VALUES
 ### 5.1 创建测试分销员
 
 ```php
-use Tourze\OrderCommissionBundle\Entity\Distributor;
-use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
-use Tourze\OrderCommissionBundle\Enum\DistributorStatus;
+use Tourze\CommissionDistributorBundle\Entity\Distributor;use Tourze\CommissionDistributorBundle\Enum\DistributorStatus;use Tourze\CommissionLevelBundle\Entity\DistributorLevel;
 
 $level1 = $em->getRepository(DistributorLevel::class)->find(1); // 一级分销员
 $user = $userRepository->find(123); // 假设用户已存在
@@ -154,8 +152,7 @@ $em->flush();
 ### 5.2 模拟提现流程
 
 ```php
-use Tourze\OrderCommissionBundle\Entity\WithdrawLedger;
-use Tourze\OrderCommissionBundle\Enum\WithdrawLedgerStatus;
+use Tourze\CommissionWithdrawBundle\Entity\WithdrawLedger;use Tourze\CommissionWithdrawBundle\Enum\WithdrawLedgerStatus;
 
 // 第一笔提现：3000元（累计3000元，未达升级阈值）
 $withdraw1 = new WithdrawLedger();

@@ -15,7 +15,7 @@ use Tourze\CommissionUpgradeBundle\MessageHandler\DistributorUpgradeCheckHandler
  * 设计约束：
  * - 实现 AsyncMessageInterface 标记接口（Symfony Messenger 路由识别）
  * - 不可变（readonly 属性）确保消息在队列传递过程中内容一致
- * - 仅包含标量类型（int）确保序列化兼容性
+ * - 仅包含标量类型（string）确保序列化兼容性
  * - 仅传递 ID 而非完整实体，避免序列化开销和状态过期风险
  *
  * @see AsyncMessageInterface
@@ -24,17 +24,15 @@ use Tourze\CommissionUpgradeBundle\MessageHandler\DistributorUpgradeCheckHandler
 final readonly class DistributorUpgradeCheckMessage implements AsyncMessageInterface
 {
     /**
-     * @param int $distributorId 分销员 ID（必填，必须为正整数）
+     * @param string $distributorId 分销员 ID（必填，雪花ID字符串）
      *
-     * @throws \InvalidArgumentException 当分销员 ID 不是正整数时
+     * @throws \InvalidArgumentException 当分销员 ID 为空时
      */
     public function __construct(
-        public int $distributorId,
+        public string $distributorId,
     ) {
-        if ($distributorId <= 0) {
-            throw new \InvalidArgumentException(
-                sprintf('Distributor ID must be a positive integer, got %d', $distributorId)
-            );
+        if ('' === $distributorId || '0' === $distributorId) {
+            throw new \InvalidArgumentException('Distributor ID must not be empty');
         }
     }
 }

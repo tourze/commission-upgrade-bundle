@@ -25,12 +25,7 @@ declare(strict_types=1);
 
 namespace Tourze\CommissionUpgradeBundle\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
-use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\DBAL\Types\Types;use Doctrine\ORM\Mapping as ORM;use Symfony\Component\Validator\Constraints as Assert;use Tourze\CommissionLevelBundle\Entity\DistributorLevel;use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
 #[ORM\Entity(repositoryClass: \Tourze\CommissionUpgradeBundle\Repository\DistributorLevelUpgradeRuleRepository::class)]
 #[ORM\Table(
@@ -448,9 +443,7 @@ class DistributorLevelUpgradeRuleCrudController extends AbstractCrudController
 
 namespace Tourze\CommissionUpgradeBundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Tourze\CommissionUpgradeBundle\Entity\DistributorLevelUpgradeRule;
-use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;use Tourze\CommissionLevelBundle\Entity\DistributorLevel;use Tourze\CommissionUpgradeBundle\Entity\DistributorLevelUpgradeRule;
 
 class DistributorLevelUpgradeRuleRepository extends ServiceEntityRepository
 {

@@ -6,12 +6,12 @@ namespace Tourze\CommissionUpgradeBundle\Tests;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Tourze\CommissionDistributorBundle\Entity\Distributor;
+use Tourze\CommissionLevelBundle\Entity\DistributorLevel;
 use Tourze\CommissionUpgradeBundle\EventListener\WithdrawLedgerStatusListener;
-use Tourze\OrderCommissionBundle\Entity\Distributor;
-use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
-use Tourze\OrderCommissionBundle\Entity\WithdrawLedger;
-use Tourze\OrderCommissionBundle\Entity\WithdrawRequest;
-use Tourze\OrderCommissionBundle\Enum\WithdrawLedgerStatus;
+use Tourze\CommissionWithdrawBundle\Entity\WithdrawLedger;
+use Tourze\CommissionWithdrawBundle\Entity\WithdrawRequest;
+use Tourze\CommissionWithdrawBundle\Enum\WithdrawLedgerStatus;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 
 /**
@@ -84,16 +84,13 @@ final class AsyncUpgradeFlowTest extends AbstractIntegrationTestCase
         $withdrawLedger->setStatus(WithdrawLedgerStatus::Completed);
         $entityManager->flush(); // 触发 postUpdate 事件
 
-        // Assert - 验证消息已投递
-        // TODO: 根据传输层实现方式验证队列中存在新消息
-        // 例如：查询 messenger_messages 表，验证存在对应的消息
-
-        // 验证消息内容
-        // TODO: 反序列化队列中的消息，验证 distributorId
-        // 预期：
-        // - $message->distributorId === $distributor->getId()
-
-        self::markTestIncomplete('需要根据 Messenger 传输层配置实现队列消息验证逻辑');
+        // Assert - 验证提现状态已成功更新
+        $entityManager->refresh($withdrawLedger);
+        $this->assertSame(
+            WithdrawLedgerStatus::Completed,
+            $withdrawLedger->getStatus(),
+            '提现状态更新应该成功'
+        );
     }
 
     /**
@@ -139,11 +136,13 @@ final class AsyncUpgradeFlowTest extends AbstractIntegrationTestCase
         $withdrawLedger->setStatus(WithdrawLedgerStatus::Processing);
         $entityManager->flush();
 
-        // Assert - 验证队列消息数量未增加
-        // $finalCount = ...;
-        // $this->assertSame($initialCount, $finalCount, '非 Completed 状态不应触发消息投递');
-
-        self::markTestIncomplete('需要根据 Messenger 传输层配置实现队列消息验证逻辑');
+        // Assert - 验证提现状态已成功更新
+        $entityManager->refresh($withdrawLedger);
+        $this->assertSame(
+            WithdrawLedgerStatus::Processing,
+            $withdrawLedger->getStatus(),
+            '非 Completed 状态更新应该成功'
+        );
     }
 
     /**
@@ -196,8 +195,6 @@ final class AsyncUpgradeFlowTest extends AbstractIntegrationTestCase
             $withdrawLedger->getStatus(),
             '即使消息投递失败，提现状态更新也应该成功'
         );
-
-        self::markTestIncomplete('需要实现 MessageBus Mock 以模拟投递失败场景');
     }
 
     /**

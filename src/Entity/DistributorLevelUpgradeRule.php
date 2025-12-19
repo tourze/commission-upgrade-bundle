@@ -7,11 +7,11 @@ namespace Tourze\CommissionUpgradeBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tourze\CommissionLevelBundle\Entity\DistributorLevel;
+use Tourze\CommissionUpgradeBundle\Attribute\ValidUpgradeExpression;
 use Tourze\CommissionUpgradeBundle\Repository\DistributorLevelUpgradeRuleRepository;
-use Tourze\CommissionUpgradeBundle\Validator\Constraints as CustomAssert;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
 
 /**
  * 分销员等级升级规则.
@@ -27,7 +27,6 @@ use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
     name: 'uniq_source_level',
     columns: ['source_level_id']
 )]
-#[ORM\Index(name: 'commission_upgrade_distributor_level_upgrade_rule_idx_target_level', columns: ['target_level_id'])]
 class DistributorLevelUpgradeRule implements \Stringable
 {
     use SnowflakeKeyAware;
@@ -61,7 +60,7 @@ class DistributorLevelUpgradeRule implements \Stringable
     )]
     #[Assert\NotBlank(message: '升级条件表达式不能为空')]
     #[Assert\Length(max: 5000, maxMessage: '表达式长度不能超过5000字符')]
-    #[CustomAssert\ValidUpgradeExpression]
+    #[ValidUpgradeExpression]
     private string $upgradeExpression;
 
     #[ORM\Column(

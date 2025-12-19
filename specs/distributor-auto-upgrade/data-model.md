@@ -82,13 +82,7 @@ declare(strict_types=1);
 
 namespace Tourze\CommissionUpgradeBundle\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
-use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\OrderCommissionBundle\Entity\Distributor;
-use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
-use Tourze\OrderCommissionBundle\Entity\WithdrawLedger;
+use Doctrine\DBAL\Types\Types;use Doctrine\ORM\Mapping as ORM;use Tourze\CommissionDistributorBundle\Entity\Distributor;use Tourze\CommissionLevelBundle\Entity\DistributorLevel;use Tourze\CommissionWithdrawBundle\Entity\WithdrawLedger;use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
 #[ORM\Entity]
 #[ORM\Table(

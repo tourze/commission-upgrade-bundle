@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tourze\CommissionUpgradeBundle\Validator\Constraints;
+namespace Tourze\CommissionUpgradeBundle\Attribute;
 
 use Symfony\Component\Validator\Constraint;
+use Tourze\CommissionUpgradeBundle\Validator\Constraints\ValidUpgradeExpressionValidator;
 
 /**
  * 升级条件表达式验证约束.
@@ -24,5 +25,10 @@ final class ValidUpgradeExpression extends Constraint
         parent::__construct([], $groups, $payload);
 
         $this->message = $message ?? $this->message;
+    }
+
+    public function validatedBy(): string
+    {
+        return ValidUpgradeExpressionValidator::class;
     }
 }

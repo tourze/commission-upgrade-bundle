@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace Tourze\CommissionUpgradeBundle\Service;
 
-use Tourze\OrderCommissionBundle\Entity\Distributor;
-use Tourze\OrderCommissionBundle\Enum\DistributorStatus;
-use Tourze\OrderCommissionBundle\Enum\WithdrawLedgerStatus;
-use Tourze\OrderCommissionBundle\Repository\CommissionLedgerRepository;
-use Tourze\OrderCommissionBundle\Repository\DistributorRepository;
-use Tourze\OrderCommissionBundle\Repository\WithdrawLedgerRepository;
+use Tourze\CommissionDistributorBundle\Entity\Distributor;
+use Tourze\CommissionDistributorBundle\Service\DistributorStatsService;
+use Tourze\CommissionLedgerBundle\Service\CommissionLedgerStatsService;
+use Tourze\CommissionWithdrawBundle\Service\WithdrawLedgerStatsService;
 
 /**
  * 升级上下文变量计算服务.
  *
  * 负责构建升级判断所需的上下文变量,从多个数据源聚合统计指标
  */
-class UpgradeContextProvider
+readonly class UpgradeContextProvider
 {
     public function __construct(
-        private WithdrawLedgerRepository $withdrawLedgerRepository,
-        private DistributorRepository $distributorRepository,
-        private CommissionLedgerRepository $commissionLedgerRepository,
+        private WithdrawLedgerStatsService $withdrawLedgerStatsService,
+        private DistributorStatsService $distributorStatsService,
+        private CommissionLedgerStatsService $commissionLedgerStatsService,
     ) {
     }
 
@@ -36,6 +34,7 @@ class UpgradeContextProvider
     {
         return [
             'withdrawnAmount' => $this->calculateWithdrawnAmount($distributor),
+            'settledCommissionAmount' => $this->calculateSettledCommissionAmount($distributor),
             'inviteeCount' => $this->calculateInviteeCount($distributor),
             'orderCount' => $this->calculateOrderCount($distributor),
             'activeInviteeCount' => $this->calculateActiveInviteeCount($distributor),
@@ -51,17 +50,19 @@ class UpgradeContextProvider
      */
     public function calculateWithdrawnAmount(Distributor $distributor): float
     {
-        $qb = $this->withdrawLedgerRepository->createQueryBuilder('wl')
-            ->select('SUM(wl.amount) as total')
-            ->where('wl.distributor = :distributor')
-            ->andWhere('wl.status = :status')
-            ->setParameter('distributor', $distributor)
-            ->setParameter('status', WithdrawLedgerStatus::Completed)
-        ;
+        return $this->withdrawLedgerStatsService->calculateWithdrawnAmount($distributor);
+    }
 
-        $result = $qb->getQuery()->getSingleScalarResult();
-
-        return (float) ($result ?? 0.0);
+    /**
+     * 计算已结算佣金总额（仅统计 CommissionLedger.Settled 状态）.
+     *
+     * @param Distributor $distributor 分销员实体
+     *
+     * @return float 已结算佣金总额,单位:元
+     */
+    public function calculateSettledCommissionAmount(Distributor $distributor): float
+    {
+        return $this->commissionLedgerStatsService->calculateSettledCommissionAmount($distributor);
     }
 
     /**
@@ -73,15 +74,7 @@ class UpgradeContextProvider
      */
     public function calculateInviteeCount(Distributor $distributor): int
     {
-        $qb = $this->distributorRepository->createQueryBuilder('d')
-            ->select('COUNT(d.id)')
-            ->where('d.parent = :parent')
-            ->andWhere('d.status = :status')
-            ->setParameter('parent', $distributor)
-            ->setParameter('status', DistributorStatus::Approved)
-        ;
-
-        return (int) $qb->getQuery()->getSingleScalarResult();
+        return $this->distributorStatsService->calculateInviteeCount($distributor);
     }
 
     /**
@@ -93,13 +86,7 @@ class UpgradeContextProvider
      */
     public function calculateOrderCount(Distributor $distributor): int
     {
-        $qb = $this->commissionLedgerRepository->createQueryBuilder('cl')
-            ->select('COUNT(DISTINCT cl.order)')
-            ->where('cl.distributor = :distributor')
-            ->setParameter('distributor', $distributor)
-        ;
-
-        return (int) $qb->getQuery()->getSingleScalarResult();
+        return $this->commissionLedgerStatsService->calculateOrderCount($distributor);
     }
 
     /**
@@ -112,19 +99,6 @@ class UpgradeContextProvider
      */
     public function calculateActiveInviteeCount(Distributor $distributor, int $days = 30): int
     {
-        $threshold = new \DateTimeImmutable(sprintf('-%d days', $days));
-
-        $qb = $this->distributorRepository->createQueryBuilder('d')
-            ->select('COUNT(DISTINCT d.id)')
-            ->innerJoin('Tourze\OrderCommissionBundle\Entity\CommissionLedger', 'cl', 'WITH', 'cl.distributor = d.id')
-            ->where('d.parent = :parent')
-            ->andWhere('d.status = :status')
-            ->andWhere('cl.createTime >= :threshold')
-            ->setParameter('parent', $distributor)
-            ->setParameter('status', DistributorStatus::Approved)
-            ->setParameter('threshold', $threshold)
-        ;
-
-        return (int) $qb->getQuery()->getSingleScalarResult();
+        return $this->distributorStatsService->calculateActiveInviteeCount($distributor, $days);
     }
 }

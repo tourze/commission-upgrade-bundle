@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\CommissionUpgradeBundle\Tests;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Tourze\AsyncContracts\AsyncMessageInterface;
 use Tourze\CommissionUpgradeBundle\Message\DistributorUpgradeCheckMessage;
@@ -14,6 +15,7 @@ use Tourze\CommissionUpgradeBundle\Message\DistributorUpgradeCheckMessage;
  * 对应任务：T009 [P] [US1]
  * 测试目标：确保消息类正确实现 AsyncMessageInterface 标记接口
  */
+#[CoversClass(DistributorUpgradeCheckMessage::class)]
 final class AsyncMessageInterfaceContractTest extends TestCase
 {
     /**
@@ -25,7 +27,7 @@ final class AsyncMessageInterfaceContractTest extends TestCase
     {
         // Arrange
         $message = new DistributorUpgradeCheckMessage(
-            distributorId: 12345
+            distributorId: '12345'
         );
 
         // Assert

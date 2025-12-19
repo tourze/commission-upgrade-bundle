@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Tourze\CommissionUpgradeBundle\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Tourze\CommissionDistributorBundle\Entity\Distributor;
 use Tourze\CommissionUpgradeBundle\Message\DistributorUpgradeCheckMessage;
 use Tourze\CommissionUpgradeBundle\Service\DistributorUpgradeService;
-use Tourze\OrderCommissionBundle\Entity\Distributor;
 
 /**
  * 分销员升级检查消息处理器
@@ -30,6 +31,7 @@ use Tourze\OrderCommissionBundle\Entity\Distributor;
  * @see DistributorUpgradeService
  */
 #[AsMessageHandler]
+#[WithMonologChannel(channel: 'commission_upgrade')]
 final readonly class DistributorUpgradeCheckHandler
 {
     public function __construct(
@@ -63,7 +65,7 @@ final readonly class DistributorUpgradeCheckHandler
 
         // 2. 执行升级检查（复用现有服务）
         try {
-            $history = $this->upgradeService->checkAndUpgrade($distributor, null);
+            $history = $this->upgradeService->checkAndUpgradeWithIntelligentRules($distributor, null);
 
             if (null !== $history) {
                 // 升级成功

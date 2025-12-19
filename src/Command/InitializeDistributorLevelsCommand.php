@@ -12,9 +12,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Tourze\CommissionDistributorBundle\Entity\Distributor;
+use Tourze\CommissionDistributorBundle\Service\DistributorService;
 use Tourze\CommissionUpgradeBundle\Service\DistributorUpgradeService;
-use Tourze\OrderCommissionBundle\Entity\Distributor;
-use Tourze\OrderCommissionBundle\Repository\DistributorRepository;
 
 /**
  * 批量初始化分销员等级命令.
@@ -28,9 +28,9 @@ use Tourze\OrderCommissionBundle\Repository\DistributorRepository;
 final class InitializeDistributorLevelsCommand extends Command
 {
     public function __construct(
-        private readonly DistributorRepository $distributorRepository,
-        private readonly DistributorUpgradeService $upgradeService,
         private readonly EntityManagerInterface $entityManager,
+        private readonly DistributorUpgradeService $upgradeService,
+        private readonly DistributorService $distributorService,
     ) {
         parent::__construct();
     }
@@ -60,7 +60,7 @@ final class InitializeDistributorLevelsCommand extends Command
         $io->title('批量初始化分销员等级');
 
         // 获取所有分销员（简化实现，实际应分批处理）
-        $distributors = $this->distributorRepository->findAll();
+        $distributors = $this->distributorService->findAll();
         $totalCount = \count($distributors);
 
         if (0 === $totalCount) {

@@ -7,8 +7,9 @@ namespace Tourze\CommissionUpgradeBundle\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Tourze\CommissionLevelBundle\Entity\DistributorLevel;
 use Tourze\CommissionUpgradeBundle\Entity\DistributorLevelUpgradeRule;
-use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
+use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
 
 /**
  * 分销员等级升级规则仓储.
@@ -16,6 +17,7 @@ use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
  * @extends ServiceEntityRepository<DistributorLevelUpgradeRule>
  */
 #[Autoconfigure(public: true)]
+#[AsRepository(entityClass: DistributorLevelUpgradeRule::class)]
 class DistributorLevelUpgradeRuleRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

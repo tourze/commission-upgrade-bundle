@@ -8,6 +8,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -54,20 +55,22 @@ final class DistributorLevelUpgradeRuleCrudController extends AbstractCrudContro
             ->setRequired(true)
             ->setHelp('升级前的等级')
             ->formatValue(static fn ($value) => $value?->getName())
+            ->setFormTypeOption('choice_label', 'name')
         ;
 
         yield AssociationField::new('targetLevel', '目标等级')
             ->setRequired(true)
             ->setHelp('升级后的等级（必须高于源等级）')
             ->formatValue(static fn ($value) => $value?->getName())
+            ->setFormTypeOption('choice_label', 'name')
         ;
 
         yield TextareaField::new('upgradeExpression', '升级条件表达式')
             ->setRequired(true)
-            ->setHelp('支持变量: withdrawnAmount, inviteeCount, orderCount, activeInviteeCount<br>示例: withdrawnAmount >= 5000 and inviteeCount >= 10')
+            ->setHelp('支持变量: withdrawnAmount：已提现佣金, settledCommissionAmount：已结算总佣金, inviteeCount：邀请人数, orderCount：产生佣金的订单数, activeInviteeCount：最近 30 天有订单的活跃邀请数<br>示例: settledCommissionAmount >= 5000 and inviteeCount >= 10')
             ->setFormTypeOption('attr', [
                 'rows' => 5,
-                'placeholder' => 'withdrawnAmount >= 5000',
+                'placeholder' => 'settledCommissionAmount >= 5000',
             ])
             ->hideOnIndex()
         ;
@@ -87,6 +90,15 @@ final class DistributorLevelUpgradeRuleCrudController extends AbstractCrudContro
                 'rows' => 3,
             ])
             ->hideOnIndex()
+        ;
+    }
+
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add('sourceLevel')
+            ->add('targetLevel')
+            ->add('isEnabled')
         ;
     }
 }

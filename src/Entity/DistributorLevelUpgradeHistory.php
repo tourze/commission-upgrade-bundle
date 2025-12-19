@@ -6,13 +6,14 @@ namespace Tourze\CommissionUpgradeBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tourze\CommissionDistributorBundle\Entity\Distributor;
+use Tourze\CommissionLevelBundle\Entity\DistributorLevel;
 use Tourze\CommissionUpgradeBundle\Repository\DistributorLevelUpgradeHistoryRepository;
+use Tourze\CommissionWithdrawBundle\Entity\WithdrawLedger;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\OrderCommissionBundle\Entity\Distributor;
-use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
-use Tourze\OrderCommissionBundle\Entity\WithdrawLedger;
 
 /**
  * 分销员等级升级历史.
@@ -25,7 +26,6 @@ use Tourze\OrderCommissionBundle\Entity\WithdrawLedger;
     options: ['comment' => '分销员等级升级历史']
 )]
 #[ORM\Index(name: 'commission_upgrade_distributor_level_upgrade_history_idx_dist_time', columns: ['distributor_id', 'upgrade_time'])]
-#[ORM\Index(name: 'commission_upgrade_distributor_level_upgrade_history_idx_time', columns: ['upgrade_time'])]
 class DistributorLevelUpgradeHistory implements \Stringable
 {
     use SnowflakeKeyAware;
@@ -90,6 +90,24 @@ class DistributorLevelUpgradeHistory implements \Stringable
     )]
     #[Assert\NotNull(message: '升级时间不能为空')]
     private \DateTimeImmutable $upgradeTime;
+
+    #[ORM\Column(
+        name: 'trigger_type',
+        type: Types::STRING,
+        length: 20,
+        nullable: false,
+        options: ['default' => 'auto', 'comment' => '触发类型：auto=自动升级，manual=手动升级']
+    )]
+    #[Assert\NotBlank(message: '触发类型不能为空')]
+    #[Assert\Choice(choices: ['auto', 'manual'], message: '触发类型必须是 auto 或 manual')]
+    private string $triggerType = 'auto';
+
+    /**
+     * 操作人（手动升级时记录，自动升级时为 null）.
+     */
+    #[ORM\ManyToOne(targetEntity: UserInterface::class)]
+    #[ORM\JoinColumn(name: 'operator_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?UserInterface $operator = null;
 
     public function getDistributor(): Distributor
     {
@@ -179,6 +197,38 @@ class DistributorLevelUpgradeHistory implements \Stringable
         $this->upgradeTime = $upgradeTime;
 
         return $this;
+    }
+
+    public function getTriggerType(): string
+    {
+        return $this->triggerType;
+    }
+
+    public function setTriggerType(string $triggerType): self
+    {
+        if (!\in_array($triggerType, ['auto', 'manual'], true)) {
+            throw new \InvalidArgumentException('Invalid trigger type. Must be "auto" or "manual".');
+        }
+        $this->triggerType = $triggerType;
+
+        return $this;
+    }
+
+    public function getOperator(): ?UserInterface
+    {
+        return $this->operator;
+    }
+
+    public function setOperator(?UserInterface $operator): self
+    {
+        $this->operator = $operator;
+
+        return $this;
+    }
+
+    public function isManualUpgrade(): bool
+    {
+        return 'manual' === $this->triggerType;
     }
 
     public function __toString(): string

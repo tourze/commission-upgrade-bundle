@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\CommissionUpgradeBundle\Tests\Message;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Tourze\CommissionUpgradeBundle\Message\DistributorUpgradeCheckMessage;
 
@@ -12,6 +13,7 @@ use Tourze\CommissionUpgradeBundle\Message\DistributorUpgradeCheckMessage;
  *
  * 测试目标：验证消息对象的创建、属性访问、序列化/反序列化、不可变性
  */
+#[CoversClass(DistributorUpgradeCheckMessage::class)]
 final class DistributorUpgradeCheckMessageTest extends TestCase
 {
     /**
@@ -21,11 +23,11 @@ final class DistributorUpgradeCheckMessageTest extends TestCase
     {
         // Arrange & Act
         $message = new DistributorUpgradeCheckMessage(
-            distributorId: 12345
+            distributorId: '12345'
         );
 
         // Assert
-        $this->assertSame(12345, $message->distributorId, '分销员 ID 应该正确存储');
+        $this->assertSame('12345', $message->distributorId, '分销员 ID 应该正确存储');
     }
 
     /**
@@ -35,7 +37,7 @@ final class DistributorUpgradeCheckMessageTest extends TestCase
     {
         // Arrange
         $original = new DistributorUpgradeCheckMessage(
-            distributorId: 12345
+            distributorId: '12345'
         );
 
         // Act
@@ -65,7 +67,7 @@ final class DistributorUpgradeCheckMessageTest extends TestCase
     {
         // Arrange
         $message = new DistributorUpgradeCheckMessage(
-            distributorId: 12345
+            distributorId: '12345'
         );
 
         // Assert
@@ -73,7 +75,7 @@ final class DistributorUpgradeCheckMessageTest extends TestCase
         $this->expectExceptionMessage('Cannot modify readonly property');
 
         // Act - 尝试修改 readonly 属性应该抛出异常
-        $message->distributorId = 99999;
+        $message->distributorId = '99999';
     }
 
     /**
@@ -83,7 +85,7 @@ final class DistributorUpgradeCheckMessageTest extends TestCase
     {
         // Arrange
         $message = new DistributorUpgradeCheckMessage(
-            distributorId: 12345
+            distributorId: '12345'
         );
 
         // Act
@@ -107,28 +109,28 @@ final class DistributorUpgradeCheckMessageTest extends TestCase
     }
 
     /**
-     * TC-005：验证传入零值 ID 时抛出异常
+     * TC-005：验证传入空字符串 ID 时抛出异常
      */
-    public function testThrowsExceptionWhenDistributorIdIsZero(): void
+    public function testThrowsExceptionWhenDistributorIdIsEmpty(): void
     {
         // Assert
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Distributor ID must be a positive integer, got 0');
+        $this->expectExceptionMessage('Distributor ID must not be empty');
 
         // Act
-        new DistributorUpgradeCheckMessage(distributorId: 0);
+        new DistributorUpgradeCheckMessage(distributorId: '');
     }
 
     /**
-     * TC-006：验证传入负值 ID 时抛出异常
+     * TC-006：验证传入零字符串 ID 时抛出异常
      */
-    public function testThrowsExceptionWhenDistributorIdIsNegative(): void
+    public function testThrowsExceptionWhenDistributorIdIsZeroString(): void
     {
         // Assert
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Distributor ID must be a positive integer, got -1');
+        $this->expectExceptionMessage('Distributor ID must not be empty');
 
         // Act
-        new DistributorUpgradeCheckMessage(distributorId: -1);
+        new DistributorUpgradeCheckMessage(distributorId: '0');
     }
 }

@@ -7,6 +7,7 @@ namespace Tourze\CommissionUpgradeBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Tourze\CommissionUpgradeBundle\Attribute\ValidUpgradeExpression;
 use Tourze\CommissionUpgradeBundle\Service\UpgradeExpressionEvaluator;
 
 /**

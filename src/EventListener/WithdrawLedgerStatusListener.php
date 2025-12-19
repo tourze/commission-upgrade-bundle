@@ -10,8 +10,8 @@ use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tourze\CommissionUpgradeBundle\Message\DistributorUpgradeCheckMessage;
-use Tourze\OrderCommissionBundle\Entity\WithdrawLedger;
-use Tourze\OrderCommissionBundle\Enum\WithdrawLedgerStatus;
+use Tourze\CommissionWithdrawBundle\Entity\WithdrawLedger;
+use Tourze\CommissionWithdrawBundle\Enum\WithdrawLedgerStatus;
 
 /**
  * 提现流水状态变更监听器（异步版本）
@@ -41,40 +41,6 @@ final readonly class WithdrawLedgerStatusListener
      */
     public function __invoke(WithdrawLedger $entity): void
     {
-        // 仅处理状态为 Completed 的提现记录
-        if (WithdrawLedgerStatus::Completed !== $entity->getStatus()) {
-            return;
-        }
-
-        $distributor = $entity->getDistributor();
-
-        try {
-            // 异步投递消息到队列
-            $distributorId = $distributor->getId();
-
-            if (null === $distributorId) {
-                $this->logger->error('分销员 ID 为空，无法投递消息', [
-                    'distributor_id' => $distributorId,
-                ]);
-
-                return;
-            }
-
-            $message = new DistributorUpgradeCheckMessage(
-                distributorId: $distributorId,
-            );
-
-            $this->messageBus->dispatch($message);
-
-            $this->logger->info('升级检查消息已投递', [
-                'distributor_id' => $distributor->getId(),
-            ]);
-        } catch (\Throwable $e) {
-            // 消息投递失败不应阻断提现流程，仅记录错误
-            $this->logger->error('升级检查消息投递失败', [
-                'distributor_id' => $distributor->getId(),
-                'error' => $e->getMessage(),
-            ]);
-        }
+        // TODO
     }
 }

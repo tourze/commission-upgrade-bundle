@@ -5,23 +5,25 @@ declare(strict_types=1);
 namespace Tourze\CommissionUpgradeBundle\Tests\Service;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\CommissionUpgradeBundle\Service\UpgradeExpressionEvaluator;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 
 /**
- * T018: UpgradeExpressionEvaluator 单元测试
+ * T018: UpgradeExpressionEvaluator 集成测试
  *
  * 测试表达式验证与评估功能
  * @internal
  */
 #[CoversClass(UpgradeExpressionEvaluator::class)]
-final class UpgradeExpressionEvaluatorTest extends TestCase
+#[RunTestsInSeparateProcesses]
+final class UpgradeExpressionEvaluatorTest extends AbstractIntegrationTestCase
 {
     private UpgradeExpressionEvaluator $evaluator;
 
-    protected function setUp(): void
+    protected function onSetUp(): void
     {
-        $this->evaluator = new UpgradeExpressionEvaluator();
+        $this->evaluator = self::getService(UpgradeExpressionEvaluator::class);
     }
 
     /**
@@ -235,13 +237,14 @@ final class UpgradeExpressionEvaluatorTest extends TestCase
      */
     public function itReturnsAllowedVariables(): void
     {
-        $variables = $this->evaluator->getAllowedVariables();
+        $variables = UpgradeExpressionEvaluator::getAllowedVariables();
 
         $this->assertIsArray($variables);
         $this->assertContains('withdrawnAmount', $variables);
         $this->assertContains('inviteeCount', $variables);
         $this->assertContains('orderCount', $variables);
         $this->assertContains('activeInviteeCount', $variables);
-        $this->assertCount(4, $variables, '应该只有4个可用变量');
+        $this->assertContains('settledCommissionAmount', $variables);
+        $this->assertCount(5, $variables, '应该有5个可用变量');
     }
 }

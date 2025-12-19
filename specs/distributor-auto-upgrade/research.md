@@ -365,9 +365,7 @@ monaco.editor.defineTheme('upgradeExpressionTheme', {
 ```php
 namespace Tourze\CommissionUpgradeBundle\Service;
 
-use Tourze\OrderCommissionBundle\Entity\Distributor;
-use Tourze\OrderCommissionBundle\Repository\WithdrawLedgerRepository;
-use Tourze\OrderCommissionBundle\Enum\WithdrawLedgerStatus;
+use Tourze\CommissionDistributorBundle\Entity\Distributor;use Tourze\CommissionWithdrawBundle\Repository\WithdrawLedgerRepository;
 
 class UpgradeContextProvider
 {
@@ -496,10 +494,7 @@ class WithdrawnAmountProvider implements UpgradeVariableProviderInterface
 ```php
 namespace Tourze\CommissionUpgradeBundle\EventListener;
 
-use Doctrine\ORM\Event\PostUpdateEventArgs;
-use Tourze\OrderCommissionBundle\Entity\WithdrawLedger;
-use Tourze\OrderCommissionBundle\Enum\WithdrawLedgerStatus;
-use Tourze\CommissionUpgradeBundle\Service\DistributorUpgradeService;
+use Doctrine\ORM\Event\PostUpdateEventArgs;use Tourze\CommissionUpgradeBundle\Service\DistributorUpgradeService;use Tourze\CommissionWithdrawBundle\Entity\WithdrawLedger;use Tourze\CommissionWithdrawBundle\Enum\WithdrawLedgerStatus;
 
 class WithdrawLedgerStatusListener
 {
@@ -538,10 +533,7 @@ services:
 ```php
 namespace Tourze\CommissionUpgradeBundle\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Tourze\OrderCommissionBundle\Entity\Distributor;
-use Tourze\OrderCommissionBundle\Entity\DistributorLevel;
-use Tourze\CommissionUpgradeBundle\Entity\DistributorLevelUpgradeHistory;
+use Doctrine\ORM\EntityManagerInterface;use Tourze\CommissionDistributorBundle\Entity\Distributor;use Tourze\CommissionLevelBundle\Entity\DistributorLevel;use Tourze\CommissionUpgradeBundle\Entity\DistributorLevelUpgradeHistory;
 
 class DistributorUpgradeService
 {

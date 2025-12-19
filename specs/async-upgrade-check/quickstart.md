@@ -140,13 +140,7 @@ declare(strict_types=1);
 
 namespace Tourze\CommissionUpgradeBundle\MessageHandler;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Tourze\CommissionUpgradeBundle\Message\DistributorUpgradeCheckMessage;
-use Tourze\CommissionUpgradeBundle\Service\DistributorUpgradeService;
-use Tourze\OrderCommissionBundle\Entity\Distributor;
-use Tourze\OrderCommissionBundle\Entity\WithdrawLedger;
+use Doctrine\ORM\EntityManagerInterface;use Psr\Log\LoggerInterface;use Symfony\Component\Messenger\Attribute\AsMessageHandler;use Tourze\CommissionDistributorBundle\Entity\Distributor;use Tourze\CommissionUpgradeBundle\Message\DistributorUpgradeCheckMessage;use Tourze\CommissionUpgradeBundle\Service\DistributorUpgradeService;use Tourze\CommissionWithdrawBundle\Entity\WithdrawLedger;
 
 #[AsMessageHandler]
 final readonly class DistributorUpgradeCheckHandler
